@@ -18,6 +18,7 @@ package environment
 
 import (
 	"fmt"
+	"os/exec"
 
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -37,10 +38,13 @@ func Delete(input cli.Input) error {
 }
 
 func (opts *DeleteSubCommand) do(input cli.Input) error {
+	//use crictl rmi delete the images
 	m := &metav1.ObjectMeta{
 		Name:      input.String(flagkey.EnvName),
 		Namespace: input.String(flagkey.NamespaceEnvironment),
 	}
+	deleteCmd := exec.Command("crictl", "rmi", "k8s.io/"+m.Name)
+	_, _ = deleteCmd.CombinedOutput()
 
 	if !input.Bool(flagkey.EnvForce) {
 		fns, err := opts.Client().V1().Function().List(metav1.NamespaceAll)
@@ -68,3 +72,4 @@ func (opts *DeleteSubCommand) do(input cli.Input) error {
 
 	return nil
 }
+
