@@ -186,8 +186,9 @@ func Commands() *cobra.Command {
 		RunE:    wrapper.Wrapper(RunKuasarWasm),
 	}
 	wrapper.SetFlags(runKuasarWasmCmd, flag.FlagSet{
-		Required: []flag.Flag{flag.FnName, flag.FnImageName},
+		Required: []flag.Flag{flag.FnName},
 		Optional: []flag.Flag{
+			flag.FnSubmitWasmBinary, flag.FnSubmitWasmSource, flag.FnSubmitWasmImage,
 			flag.FnPort, flag.FnCommand, flag.FnArgs,
 			flag.FnCfgMap, flag.FnSecret,
 			flag.FnExecutionTimeout,
@@ -234,16 +235,16 @@ func Commands() *cobra.Command {
 		RunE:    wrapper.Wrapper(RunWasm),
 	}
 	wrapper.SetFlags(runWasmCmd, flag.FlagSet{
-		Required: []flag.Flag{flag.FnName, flag.PkgCode },
+		Required: []flag.Flag{flag.FnName, flag.PkgCode},
 		Optional: []flag.Flag{
 			flag.FnPort, flag.FnCommand, flag.FnArgs,
 			flag.FnCfgMap, flag.FnSecret,
 			flag.FnExecutionTimeout,
 			flag.FnIdleTimeout,
 			flag.Labels, flag.Annotation,
-		    flag.FnEntryPoint,flag.FnPkgName,
-			flag.FnTerminationGracePeriod,flag.PkgDeployArchive,
-			flag.PkgBuildCmd,flag.PkgSrcArchive,
+			flag.FnEntryPoint, flag.FnPkgName,
+			flag.FnTerminationGracePeriod, flag.PkgDeployArchive,
+			flag.PkgBuildCmd, flag.PkgSrcArchive,
 
 			// flag for wasm to use.
 			flag.RunTimeMinCPU, flag.RunTimeMaxCPU, flag.RunTimeMinMemory,
@@ -272,7 +273,7 @@ func Commands() *cobra.Command {
 		Short:   "Create, update and manage functions",
 	}
 	command.AddCommand(createCmd, getCmd, getmetaCmd, updateCmd, deleteCmd, listCmd, logsCmd, testCmd,
-		runContainerCmd,runKuasarWasmCmd,updateContainerCmd,runWasmCmd, listPodsCmd)
+		runContainerCmd, runKuasarWasmCmd, updateContainerCmd, runWasmCmd, listPodsCmd)
 
 	return command
 }

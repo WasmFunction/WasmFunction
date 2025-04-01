@@ -95,8 +95,9 @@ var (
 	RunTimeMinMemory = Flag{Type: Int, Name: flagkey.RuntimeMinmemory, Usage: "Minimum memory to be assigned to pod (In megabyte)"}
 	RunTimeMaxMemory = Flag{Type: Int, Name: flagkey.RuntimeMaxmemory, Usage: "Maximum memory to be assigned to pod (In megabyte)"}
 
-	ReplicasMin             = Flag{Type: Int, Name: flagkey.ReplicasMinscale, Usage: "Minimum number of pods (Uses resource inputs to configure HPA)", DefaultValue: 1}
-	ReplicasMax             = Flag{Type: Int, Name: flagkey.ReplicasMaxscale, Usage: "Maximum number of pods (Uses resource inputs to configure HPA)", DefaultValue: 1}
+	ReplicasMin = Flag{Type: Int, Name: flagkey.ReplicasMinscale, Usage: "Minimum number of pods (Uses resource inputs to configure HPA)", DefaultValue: 1}
+	ReplicasMax = Flag{Type: Int, Name: flagkey.ReplicasMaxscale, Usage: "Maximum number of pods (Uses resource inputs to configure HPA)", DefaultValue: 1}
+
 	FnName                  = Flag{Type: String, Name: flagkey.FnName, Usage: "Function name"}
 	FnSpecializationTimeout = Flag{Type: Int, Name: flagkey.FnSpecializationTimeout, Aliases: []string{"st"}, Usage: "Timeout for executor to wait for function pod creation", DefaultValue: fv1.DefaultSpecializationTimeOut}
 	FnEnvName               = Flag{Type: String, Name: flagkey.FnEnvironmentName, Usage: "Environment name for function"}
@@ -128,6 +129,9 @@ var (
 	FnSubPath               = Flag{Type: String, Name: flagkey.FnSubPath, Usage: "Sub Path to check if function internally supports routing"}
 	// Termination Grace Period configurable at function creation/update only for container functions
 	FnTerminationGracePeriod = Flag{Type: Int64, Name: flagkey.FnGracePeriod, Usage: "Grace time (in seconds) for pod to perform connection draining before termination (default value will be used if negative value is given)", DefaultValue: 360}
+	FnSubmitWasmImage        = Flag{Type: String, Name: flagkey.FnSubmitWasmImage, Usage: "Wasm image URL (e.g. docker.io/mywasm:v1). Use this to specify a prebuilt WebAssembly image."}
+	FnSubmitWasmBinary       = Flag{Type: String, Name: flagkey.FnSubmitWasmBinary, Usage: "Path to a compiled WebAssembly (.wasm) binary file. "}
+	FnSubmitWasmSource       = Flag{Type: String, Name: flagkey.FnSubmitWasmSource, Usage: "Path to a source code directory for automatic compilation to WebAssembly. The function will be built and deployed automatically."}
 
 	HtName              = Flag{Type: String, Name: flagkey.HtName, Usage: "HTTP trigger name"}
 	HtMethod            = Flag{Type: StringSlice, Name: flagkey.HtMethod, Usage: "HTTP Methods: GET,POST,PUT,DELETE,HEAD. To mention single method: --method GET and for multiple methods --method GET --method POST. [DEPRECATED for 'fn create', use 'route create' instead]", DefaultValue: []string{http.MethodGet}}
@@ -152,22 +156,22 @@ var (
 	TtFnName = Flag{Type: String, Name: flagkey.TtFnName, Usage: "Function name"}
 	TtRound  = Flag{Type: Int, Name: flagkey.TtRound, Usage: "Get next N rounds of invocation time", DefaultValue: 1}
 
-	MqtName                   = Flag{Type: String, Name: flagkey.MqtName, Usage: "Message queue trigger name"}
-	MqtFnName                 = Flag{Type: String, Name: flagkey.MqtFnName, Usage: "Function name"}
-	MqtMQType                 = Flag{Type: String, Name: flagkey.MqtMQType, Usage: "For mqtype \"fission\" => kafka\n\t\t\t\t\t For mqtype \"keda\" => kafka, aws-sqs-queue, aws-kinesis-stream, gcp-pubsub, stan, nats-jetstream, rabbitmq, redis", DefaultValue: "kafka"}
-	MqtTopic                  = Flag{Type: String, Name: flagkey.MqtTopic, Usage: "Message queue Topic the trigger listens on"}
-	MqtRespTopic              = Flag{Type: String, Name: flagkey.MqtRespTopic, Usage: "Topic that the function response is sent on (response discarded if unspecified)"}
-	MqtErrorTopic             = Flag{Type: String, Name: flagkey.MqtErrorTopic, Usage: "Topic that the function error messages are sent to (errors discarded if unspecified"}
-	MqtMaxRetries             = Flag{Type: Int, Name: flagkey.MqtMaxRetries, Usage: "Maximum number of times the function will be retried upon failure", DefaultValue: 0}
-	MqtMsgContentType         = Flag{Type: String, Name: flagkey.MqtMsgContentType, Short: "c", Usage: "Content type of messages that publish to the topic", DefaultValue: "application/json"}
-	MqtPollingInterval        = Flag{Type: Int, Name: flagkey.MqtPollingInterval, Usage: "Interval to check the message source for up/down scaling operation of consumers", DefaultValue: 30}
-	MqtCooldownPeriod         = Flag{Type: Int, Name: flagkey.MqtCooldownPeriod, Usage: "The period to wait after the last trigger reported active before scaling the consumer back to 0", DefaultValue: 300}
-	MqtMinReplicaCount        = Flag{Type: Int, Name: flagkey.MqtMinReplicaCount, Usage: "Minimum number of replicas of consumers to scale down to", DefaultValue: 0}
-	MqtMaxReplicaCount        = Flag{Type: Int, Name: flagkey.MqtMaxReplicaCount, Usage: "Maximum number of replicas of consumers to scale up to", DefaultValue: 100}
-	MqtMetadata               = Flag{Type: StringSlice, Name: flagkey.MqtMetadata, Usage: "Metadata needed for connecting to source system in format: --metadata key1=value1 --metadata key2=value2"}
-	MqtSecret                 = Flag{Type: String, Name: flagkey.MqtSecret, Usage: "Name of secret object", DefaultValue: ""}
-	MqtKind                   = Flag{Type: String, Name: flagkey.MqtKind, Usage: "Kind of Message Queue Trigger, e.g. fission, keda", DefaultValue: "keda"}
-	EnvWasmBuilder            = Flag{Type: String, Name: flagkey.EnvWasmBuilder, Usage: "Specify a builder image for WebAssembly (Wasm) environments"}
+	MqtName            = Flag{Type: String, Name: flagkey.MqtName, Usage: "Message queue trigger name"}
+	MqtFnName          = Flag{Type: String, Name: flagkey.MqtFnName, Usage: "Function name"}
+	MqtMQType          = Flag{Type: String, Name: flagkey.MqtMQType, Usage: "For mqtype \"fission\" => kafka\n\t\t\t\t\t For mqtype \"keda\" => kafka, aws-sqs-queue, aws-kinesis-stream, gcp-pubsub, stan, nats-jetstream, rabbitmq, redis", DefaultValue: "kafka"}
+	MqtTopic           = Flag{Type: String, Name: flagkey.MqtTopic, Usage: "Message queue Topic the trigger listens on"}
+	MqtRespTopic       = Flag{Type: String, Name: flagkey.MqtRespTopic, Usage: "Topic that the function response is sent on (response discarded if unspecified)"}
+	MqtErrorTopic      = Flag{Type: String, Name: flagkey.MqtErrorTopic, Usage: "Topic that the function error messages are sent to (errors discarded if unspecified"}
+	MqtMaxRetries      = Flag{Type: Int, Name: flagkey.MqtMaxRetries, Usage: "Maximum number of times the function will be retried upon failure", DefaultValue: 0}
+	MqtMsgContentType  = Flag{Type: String, Name: flagkey.MqtMsgContentType, Short: "c", Usage: "Content type of messages that publish to the topic", DefaultValue: "application/json"}
+	MqtPollingInterval = Flag{Type: Int, Name: flagkey.MqtPollingInterval, Usage: "Interval to check the message source for up/down scaling operation of consumers", DefaultValue: 30}
+	MqtCooldownPeriod  = Flag{Type: Int, Name: flagkey.MqtCooldownPeriod, Usage: "The period to wait after the last trigger reported active before scaling the consumer back to 0", DefaultValue: 300}
+	MqtMinReplicaCount = Flag{Type: Int, Name: flagkey.MqtMinReplicaCount, Usage: "Minimum number of replicas of consumers to scale down to", DefaultValue: 0}
+	MqtMaxReplicaCount = Flag{Type: Int, Name: flagkey.MqtMaxReplicaCount, Usage: "Maximum number of replicas of consumers to scale up to", DefaultValue: 100}
+	MqtMetadata        = Flag{Type: StringSlice, Name: flagkey.MqtMetadata, Usage: "Metadata needed for connecting to source system in format: --metadata key1=value1 --metadata key2=value2"}
+	MqtSecret          = Flag{Type: String, Name: flagkey.MqtSecret, Usage: "Name of secret object", DefaultValue: ""}
+	MqtKind            = Flag{Type: String, Name: flagkey.MqtKind, Usage: "Kind of Message Queue Trigger, e.g. fission, keda", DefaultValue: "keda"}
+
 	EnvName                   = Flag{Type: String, Name: flagkey.EnvName, Usage: "Environment name"}
 	EnvPoolsize               = Flag{Type: Int, Name: flagkey.EnvPoolsize, Usage: "Size of the pool", DefaultValue: 3}
 	EnvImage                  = Flag{Type: String, Name: flagkey.EnvImage, Usage: "Environment image URL"}

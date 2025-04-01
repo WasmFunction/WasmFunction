@@ -79,6 +79,9 @@ const (
 	FnOnceOnly              = "onceonly"
 	FnSubPath               = "subpath"
 	FnGracePeriod           = "graceperiod"
+	FnSubmitWasmImage       = "wasm-image"  // 远程 Wasm 镜像 URL
+	FnSubmitWasmBinary      = "wasm-binary" // 直接上传 .wasm 可执行文件
+	FnSubmitWasmSource      = "wasm-source" // 提交源码目录并编译
 
 	HtName              = resourceName
 	HtMethod            = "method"
@@ -118,7 +121,7 @@ const (
 	MqtMetadata        = "metadata"
 	MqtSecret          = "secret"
 	MqtKind            = "mqtkind"
-	EnvWasmBuilder     = "wasm-builder"
+
 	EnvName            = resourceName
 	EnvPoolsize        = "poolsize"
 	EnvImage           = "image"
